@@ -57,7 +57,8 @@ namespace Shadowsocks.View
             UpdateTrayIcon();
             _notifyIcon.Visible = true;
             _notifyIcon.ContextMenu = contextMenu1;
-            _notifyIcon.MouseDoubleClick += notifyIcon1_DoubleClick;
+           // _notifyIcon.MouseDoubleClick += notifyIcon1_DoubleClick;
+            _notifyIcon.MouseClick += notifyIcon1_Click;
 
             this.updateChecker = new UpdateChecker();
             updateChecker.NewVersionFound += updateChecker_NewVersionFound;
@@ -111,6 +112,26 @@ namespace Shadowsocks.View
                     {
                         Color color = icon.GetPixel(x, y);
                         iconCopy.SetPixel(x, y, Color.FromArgb((byte)(color.A / 1.25), color.R, color.G, color.B));
+                    }
+                }
+                icon = iconCopy;
+            }
+            else if (!global)
+            {
+                Bitmap iconCopy = new Bitmap(icon);
+                for (int x = 0; x < iconCopy.Width; x++)
+                {
+                    for (int y = 0; y < iconCopy.Height; y++)
+                    {
+                        Color color = icon.GetPixel(x, y);
+                        if (x < iconCopy.Width / 2 + 1)
+                        {
+                            iconCopy.SetPixel(x, y, Color.FromArgb((byte)(color.A / 1.25), color.R, color.G, color.B));
+                        }
+                        else
+                        {
+                            iconCopy.SetPixel(x, y, color);
+                        }
                     }
                 }
                 icon = iconCopy;
@@ -317,7 +338,15 @@ namespace Shadowsocks.View
         {
             if (e.Button == MouseButtons.Left)
             {
-                ShowConfigForm();
+                controller.ToggleEnable(!enableItem.Checked);
+            }
+        }
+
+        private void notifyIcon1_Click(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && enableItem.Checked)
+            {
+                controller.ToggleGlobal(!globalModeItem.Checked);
             }
         }
 
